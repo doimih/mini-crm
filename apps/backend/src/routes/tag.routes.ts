@@ -13,15 +13,15 @@ import { validate } from '../middleware/validation.middleware';
 const router = Router();
 
 router.use(authenticate);
-router.use(authorizeRoles(['SUPERADMIN']));
 
 router.get('/', getTags);
 router.post(
   '/',
+  authorizeRoles(['SUPERADMIN']),
   [body('name').notEmpty().trim(), validate],
   createTag
 );
-router.delete('/:id', deleteTag);
+router.delete('/:id', authorizeRoles(['SUPERADMIN']), deleteTag);
 
 router.post('/contact/:contactId/tag/:tagId', addTagToContact);
 router.delete('/contact/:contactId/tag/:tagId', removeTagFromContact);

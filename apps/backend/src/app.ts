@@ -6,6 +6,12 @@ import contactRoutes from './routes/contact.routes';
 import tagRoutes from './routes/tag.routes';
 import userRoutes from './routes/user.routes';
 import emailConfigRoutes from './routes/emailConfig.routes';
+import emailLogRoutes from './routes/emailLog.routes';
+import auditLogRoutes from './routes/auditLog.routes';
+import calendarRoutes from './routes/calendar.routes';
+import profileRoutes from './routes/profile.routes';
+import translationRoutes from './routes/translation.routes';
+import ticketRoutes from './routes/ticket.routes';
 import { errorHandler } from './middleware/error.middleware';
 
 dotenv.config();
@@ -31,6 +37,12 @@ app.use('/mini-crm/api/contacts', contactRoutes);
 app.use('/mini-crm/api/tags', tagRoutes);
 app.use('/mini-crm/api/users', userRoutes);
 app.use('/mini-crm/api/email-config', emailConfigRoutes);
+app.use('/mini-crm/api/email-logs', emailLogRoutes);
+app.use('/mini-crm/api/audit-logs', auditLogRoutes);
+app.use('/mini-crm/api/calendar', calendarRoutes);
+app.use('/mini-crm/api/profile', profileRoutes);
+app.use('/mini-crm/api/translations', translationRoutes);
+app.use('/mini-crm/api/tickets', ticketRoutes);
 
 // Error handler
 app.use(errorHandler);

@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 interface JwtPayload {
   userId: number;
@@ -15,7 +18,7 @@ declare global {
   }
 }
 
-export const authenticate = (
+export const authenticate = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -33,6 +36,23 @@ export const authenticate = (
     ) as JwtPayload;
 
     req.user = decoded;
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { emailVerifiedAt: true },
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+
+    const isLogout = req.originalUrl?.includes('/auth/logout');
+    const isResendVerification = req.originalUrl?.includes('/auth/resend-verification');
+
+    if (!user.emailVerifiedAt && !isLogout && !isResendVerification) {
+      return res.status(403).json({ message: 'Email not verified' });
+    }
+
     next();
   } catch (error) {
     res.status(401).json({ message: 'Invalid token' });

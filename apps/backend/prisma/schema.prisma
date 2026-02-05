@@ -13,13 +13,56 @@ model User {
   password  String
   role      Role     @default(USER)
   status    UserStatus @default(ACTIVE)
+  phone     String?
+  avatarUrl String?
+  notificationPreference NotificationPreference @default(NONE)
+  timezone  String   @default("UTC")
+  language  String   @default("en")
   emailVerifiedAt DateTime?
   emailVerificationToken String?
   emailVerificationTokenExpires DateTime?
+  passwordResetToken String?
+  passwordResetTokenExpires DateTime?
   lastLoginAt  DateTime?
   lastLogoutAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  auditLogs AuditLog[]
+  calendarEvents CalendarEvent[]
+  contacts Contact[]
+  emailLogs EmailLog[]
+  tickets Ticket[]
+  ticketComments TicketComment[]
+  assignedTickets Ticket[] @relation("AssignedTickets")
+}
+
+model CalendarEvent {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  type      CalendarEventType
+  notes     String?
+  startAt   DateTime
+  endAt     DateTime
+  allDay    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startAt])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  action    String
+  entity    String?
+  entityId  Int?
+  details   Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model EmailConfig {
@@ -33,6 +76,22 @@ model EmailConfig {
   updatedAt DateTime @updatedAt
 }
 
+model EmailLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  recipient String
+  subject   String
+  status    EmailStatus @default(PENDING)
+  errorMessage String?
+  sentAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([status])
+}
+
 enum Role {
   USER
   ADMIN
@@ -44,8 +103,35 @@ enum UserStatus {
   SUSPENDED
 }
 
+enum NotificationPreference {
+  PUSH
+  EMAIL
+  NONE
+}
+
+enum CalendarEventType {
+  TASK
+  MEETING
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model Translation {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  en        String
+  ro        String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Contact {
   id        Int          @id @default(autoincrement())
+  userId    Int
   name      String
   contactPersonName String?
   email     String?
@@ -55,6 +141,10 @@ model Contact {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   tags      ContactTag[]
+  tickets   Ticket[]
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Tag {
@@ -70,4 +160,70 @@ model ContactTag {
   tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([contactId, tagId])
+}
+
+model Ticket {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  assignedTo  Int?
+  contactId   Int?
+  subject     String
+  description String
+  status      TicketStatus @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedUser User?   @relation("AssignedTickets", fields: [assignedTo], references: [id], onDelete: SetNull)
+  contact     Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  comments    TicketComment[]
+  attachments TicketAttachment[]
+
+  @@index([userId])
+  @@index([assignedTo])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model TicketComment {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+model TicketAttachment {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int
+  filename  String
+  filepath  String
+  filesize  Int
+  mimetype  String
+  createdAt DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }

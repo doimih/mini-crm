@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { logAudit } from '../services/auditLog';
 
 const prisma = new PrismaClient();
 
@@ -30,6 +31,14 @@ export const createTag = async (
       data: { name },
     });
 
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'TAG_CREATE',
+      entity: 'Tag',
+      entityId: tag.id,
+      details: { name: tag.name },
+    });
+
     res.status(201).json(tag);
   } catch (error) {
     next(error);
@@ -46,6 +55,13 @@ export const deleteTag = async (
 
     await prisma.tag.delete({
       where: { id: parseInt(id) },
+    });
+
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'TAG_DELETE',
+      entity: 'Tag',
+      entityId: parseInt(id),
     });
 
     res.status(204).send();
@@ -69,6 +85,14 @@ export const addTagToContact = async (
       },
     });
 
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'CONTACT_TAG_ADD',
+      entity: 'Contact',
+      entityId: parseInt(contactId),
+      details: { tagId: parseInt(tagId) },
+    });
+
     res.status(201).json({ message: 'Tag added to contact' });
   } catch (error) {
     next(error);
@@ -90,6 +114,14 @@ export const removeTagFromContact = async (
           tagId: parseInt(tagId),
         },
       },
+    });
+
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'CONTACT_TAG_REMOVE',
+      entity: 'Contact',
+      entityId: parseInt(contactId),
+      details: { tagId: parseInt(tagId) },
     });
 
     res.status(204).send();

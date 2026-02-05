@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 
 interface LoginProps {
@@ -72,6 +73,12 @@ export default function Login({ onLogin }: LoginProps) {
             {loading ? 'Loading...' : isRegister ? 'Register' : 'Login'}
           </button>
         </form>
+        
+        {!isRegister && (
+          <Link to="/forgot-password" className="toggle-btn" style={{ display: 'block', marginTop: '10px' }}>
+            Forgot Password?
+          </Link>
+        )}
         
         <button
           className="toggle-btn"

@@ -6,6 +6,16 @@ export const seedContactsIfEmpty = async () => {
   const count = await prisma.contact.count();
   if (count > 0) return;
 
+  // Get superadmin user
+  const superadmin = await prisma.user.findFirst({
+    where: { role: 'SUPERADMIN' },
+  });
+
+  if (!superadmin) {
+    console.log('No superadmin found, skipping contact seeding');
+    return;
+  }
+
   const tags = ['Lead', 'Prospect', 'Client', 'VIP'];
   const createdTags = await Promise.all(
     tags.map((name) =>
@@ -20,6 +30,7 @@ export const seedContactsIfEmpty = async () => {
   const contacts = await prisma.contact.createMany({
     data: [
       {
+        userId: superadmin.id,
         name: 'Popescu Andrei',
         contactPersonName: 'Ionescu Maria',
         email: 'andrei.popescu@example.com',
@@ -28,6 +39,7 @@ export const seedContactsIfEmpty = async () => {
         notes: 'Interested in enterprise plan.',
       },
       {
+        userId: superadmin.id,
         name: 'Ionescu Elena',
         contactPersonName: 'Vasilescu Dan',
         email: 'elena.ionescu@example.com',
@@ -36,6 +48,7 @@ export const seedContactsIfEmpty = async () => {
         notes: 'Asked for a demo.',
       },
       {
+        userId: superadmin.id,
         name: 'Dumitru Mihai',
         contactPersonName: 'Dumitru Alina',
         email: 'mihai.dumitru@example.com',
@@ -44,6 +57,7 @@ export const seedContactsIfEmpty = async () => {
         notes: 'Follow-up next week.',
       },
       {
+        userId: superadmin.id,
         name: 'Georgescu Ana',
         contactPersonName: 'Popa Radu',
         email: 'ana.georgescu@example.com',
@@ -52,6 +66,7 @@ export const seedContactsIfEmpty = async () => {
         notes: 'Potential long-term client.',
       },
       {
+        userId: superadmin.id,
         name: 'Marinescu Vlad',
         contactPersonName: 'Marinescu Ioana',
         email: 'vlad.marinescu@example.com',
@@ -63,6 +78,7 @@ export const seedContactsIfEmpty = async () => {
   });
 
   const created = await prisma.contact.findMany({
+    where: { userId: superadmin.id },
     orderBy: { id: 'asc' },
   });
 

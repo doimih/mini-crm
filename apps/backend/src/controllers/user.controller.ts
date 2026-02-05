@@ -3,6 +3,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { generateEmailVerificationToken } from '../services/emailVerification';
 import { isEmailConfigured, sendVerificationEmail } from '../services/mailer';
+import { logAudit } from '../services/auditLog';
 
 const prisma = new PrismaClient();
 
@@ -30,7 +31,7 @@ export const createUser = async (
   next: NextFunction
 ) => {
   try {
-    const { email, password, role, status } = req.body;
+    const { email, password, role, status, phone, avatarUrl, notificationPreference } = req.body;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -67,13 +68,33 @@ export const createUser = async (
       data.status = status;
     }
 
+    if (phone) {
+      data.phone = phone;
+    }
+
+    if (avatarUrl) {
+      data.avatarUrl = avatarUrl;
+    }
+
+    if (notificationPreference) {
+      data.notificationPreference = notificationPreference;
+    }
+
     const user = await prisma.user.create({
       data,
     });
 
     if (verificationToken) {
-      await sendVerificationEmail(email, verificationToken);
+      await sendVerificationEmail(email, verificationToken, user.id);
     }
+
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'USER_CREATE',
+      entity: 'User',
+      entityId: user.id,
+      details: { email: user.email, role: user.role },
+    });
 
     const { password: _password, ...safeUser } = user;
     res.status(201).json(safeUser);
@@ -89,19 +110,22 @@ export const updateUser = async (
 ) => {
   try {
     const { id } = req.params;
-    const { email, password, role, status } = req.body;
+    const { email, password, role, status, phone, avatarUrl, notificationPreference } = req.body;
 
+    // Superadmin can edit anyone except themselves for role/status
+    const isSelf = req.user?.userId === parseInt(id);
+    
     const data: Record<string, unknown> = {};
 
-    if (email) {
+    if (email && !isSelf) {
       data.email = email;
     }
 
-    if (status) {
+    if (status && !isSelf) {
       data.status = status;
     }
 
-    if (role) {
+    if (role && !isSelf) {
       data.role = role;
     }
 
@@ -109,9 +133,29 @@ export const updateUser = async (
       data.password = await bcrypt.hash(password, 10);
     }
 
+    if (phone) {
+      data.phone = phone;
+    }
+
+    if (avatarUrl) {
+      data.avatarUrl = avatarUrl;
+    }
+
+    if (notificationPreference) {
+      data.notificationPreference = notificationPreference;
+    }
+
     const user = await prisma.user.update({
       where: { id: parseInt(id) },
       data,
+    });
+
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'USER_UPDATE',
+      entity: 'User',
+      entityId: user.id,
+      details: { email: user.email, role: user.role, status: user.status },
     });
 
     const { password: _password, ...safeUser } = user;
@@ -137,6 +181,13 @@ export const deleteUser = async (
       where: { id: parseInt(id) },
     });
 
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'USER_DELETE',
+      entity: 'User',
+      entityId: parseInt(id),
+    });
+
     res.status(204).send();
   } catch (error) {
     next(error);
@@ -159,6 +210,14 @@ export const updateUserStatus = async (
     const user = await prisma.user.update({
       where: { id: parseInt(id) },
       data: { status },
+    });
+
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'USER_STATUS',
+      entity: 'User',
+      entityId: user.id,
+      details: { status: user.status },
     });
 
     const { password: _password, ...safeUser } = user;
@@ -190,6 +249,14 @@ export const updateUserVerification = async (
         emailVerificationToken: verified ? null : undefined,
         emailVerificationTokenExpires: verified ? null : undefined,
       },
+    });
+
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'USER_VERIFY',
+      entity: 'User',
+      entityId: user.id,
+      details: { verified },
     });
 
     const { password: _password, ...safeUser } = user;

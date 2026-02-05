@@ -4,6 +4,11 @@ import Login from './components/Login';
 import ContactList from './components/ContactList';
 import UserAdmin from './components/UserAdmin';
 import EmailVerify from './components/EmailVerify';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
+import PersonalPanel from './components/PersonalPanel';
+import AuditLogViewer from './components/AuditLogViewer';
+import Inbox from './components/Inbox';
 import { api } from './services/api';
 
 function AppRoutes() {
@@ -43,6 +48,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/verify" element={<EmailVerify />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route
         path="/login"
         element={
@@ -68,6 +75,36 @@ function AppRoutes() {
         element={
           isAuthenticated && user?.role === 'SUPERADMIN' ? (
             <UserAdmin />
+          ) : (
+            <Navigate to="/" />
+          )
+        }
+      />
+      <Route
+        path="/me"
+        element={
+          isAuthenticated ? (
+            <PersonalPanel />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route
+        path="/inbox"
+        element={
+          isAuthenticated ? (
+            <Inbox />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route
+        path="/audit-logs"
+        element={
+          isAuthenticated && user?.role === 'SUPERADMIN' ? (
+            <AuditLogViewer />
           ) : (
             <Navigate to="/" />
           )

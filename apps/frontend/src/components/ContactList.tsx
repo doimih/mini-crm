@@ -107,10 +107,21 @@ export default function ContactList({ onLogout, user }: ContactListProps) {
       <header>
         <h1>Contact Mini CRM</h1>
         <div>
+          <Link to="/inbox" className="btn-secondary">
+            Inbox
+          </Link>
+          <Link to="/me" className="btn-secondary">
+            Personal Panel
+          </Link>
           {user?.role === 'SUPERADMIN' && (
-            <Link to="/admin" className="btn-secondary">
-              Admin
-            </Link>
+            <>
+              <Link to="/admin" className="btn-secondary">
+                Admin
+              </Link>
+              <Link to="/audit-logs" className="btn-secondary">
+                Activity Log
+              </Link>
+            </>
           )}
           <button onClick={onLogout} className="btn-secondary">
             Logout

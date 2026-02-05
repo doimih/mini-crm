@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { stringify } from 'csv-stringify/sync';
+import { logAudit } from '../services/auditLog';
 
 const prisma = new PrismaClient();
 
@@ -15,16 +16,18 @@ export const getContacts = async (
     const search = req.query.search as string;
     const skip = (page - 1) * limit;
 
-    const where = search
-      ? {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' as const } },
-            { email: { contains: search, mode: 'insensitive' as const } },
-            { company: { contains: search, mode: 'insensitive' as const } },
-            { contactPersonName: { contains: search, mode: 'insensitive' as const } },
-          ],
-        }
-      : {};
+    const where: any = {
+      userId: req.user!.userId,
+    };
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' as const } },
+        { email: { contains: search, mode: 'insensitive' as const } },
+        { company: { contains: search, mode: 'insensitive' as const } },
+        { contactPersonName: { contains: search, mode: 'insensitive' as const } },
+      ];
+    }
 
     const [contacts, total] = await Promise.all([
       prisma.contact.findMany({
@@ -68,8 +71,11 @@ export const getContact = async (
   try {
     const { id } = req.params;
 
-    const contact = await prisma.contact.findUnique({
-      where: { id: parseInt(id) },
+    const contact = await prisma.contact.findFirst({
+      where: { 
+        id: parseInt(id),
+        userId: req.user!.userId,
+      },
       include: {
         tags: {
           include: {
@@ -101,7 +107,23 @@ export const createContact = async (
     const { name, contactPersonName, email, phone, company, notes } = req.body;
 
     const contact = await prisma.contact.create({
-      data: { name, contactPersonName, email, phone, company, notes },
+      data: { 
+        userId: req.user!.userId,
+        name, 
+        contactPersonName, 
+        email, 
+        phone, 
+        company, 
+        notes 
+      },
+    });
+
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'CONTACT_CREATE',
+      entity: 'Contact',
+      entityId: contact.id,
+      details: { name: contact.name },
     });
 
     res.status(201).json(contact);
@@ -119,6 +141,18 @@ export const updateContact = async (
     const { id } = req.params;
     const { name, contactPersonName, email, phone, company, notes } = req.body;
 
+    // Check if contact belongs to user
+    const existing = await prisma.contact.findFirst({
+      where: { 
+        id: parseInt(id),
+        userId: req.user!.userId,
+      },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ message: 'Contact not found' });
+    }
+
     const contact = await prisma.contact.update({
       where: { id: parseInt(id) },
       data: { name, contactPersonName, email, phone, company, notes },
@@ -129,6 +163,14 @@ export const updateContact = async (
           },
         },
       },
+    });
+
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'CONTACT_UPDATE',
+      entity: 'Contact',
+      entityId: contact.id,
+      details: { name: contact.name },
     });
 
     res.json({
@@ -148,8 +190,27 @@ export const deleteContact = async (
   try {
     const { id } = req.params;
 
+    // Check if contact belongs to user
+    const existing = await prisma.contact.findFirst({
+      where: { 
+        id: parseInt(id),
+        userId: req.user!.userId,
+      },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ message: 'Contact not found' });
+    }
+
     await prisma.contact.delete({
       where: { id: parseInt(id) },
+    });
+
+    await logAudit({
+      userId: req.user?.userId,
+      action: 'CONTACT_DELETE',
+      entity: 'Contact',
+      entityId: parseInt(id),
     });
 
     res.status(204).send();
@@ -165,6 +226,7 @@ export const exportContacts = async (
 ) => {
   try {
     const contacts = await prisma.contact.findMany({
+      where: { userId: req.user!.userId },
       include: {
         tags: {
           include: {
