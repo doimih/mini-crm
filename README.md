@@ -1,4 +1,4 @@
-# mini-crm
+# Contacts Mini-crm
 
 ## Overview
 mini-crm is a lightweight Customer Relationship Management (CRM) app built as a monorepo with a Node.js/Express API and a React/Vite frontend. It supports user authentication, contact management, tagging, search, pagination, and CSV export.
