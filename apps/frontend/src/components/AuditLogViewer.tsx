@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 
 interface AuditLog {
@@ -198,12 +199,16 @@ export default function AuditLogViewer() {
       <header>
         <h1>User Activity Log</h1>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <a href="/mini-crm/" className="btn-secondary">
-            Back to Contacts
-          </a>
-          <a href="/mini-crm/admin" className="btn-secondary">
-            Admin Panel
-          </a>
+          <Link to="/mini-crm/">
+            <button className="btn-secondary">
+              Back to Contacts
+            </button>
+          </Link>
+          <Link to="/mini-crm/admin">
+            <button className="btn-secondary">
+              Admin Panel
+            </button>
+          </Link>
         </div>
       </header>
 

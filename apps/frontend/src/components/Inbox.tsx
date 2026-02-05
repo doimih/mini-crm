@@ -1,4 +1,5 @@
 import { useState, useEffect, FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 
 interface User {
@@ -291,9 +292,11 @@ export default function Inbox() {
           <button onClick={() => setShowNewTicket(true)} className="btn-primary">
             + New Ticket
           </button>
-          <a href="/mini-crm/" className="btn-secondary">
-            Back to Contacts
-          </a>
+          <Link to="/mini-crm/">
+            <button className="btn-secondary">
+              Back to Contacts
+            </button>
+          </Link>
         </div>
       </header>
 

@@ -337,8 +337,10 @@ export default function PersonalPanel() {
       <header>
         <h1>Personal Panel</h1>
         <div>
-          <Link to="/" className="btn-secondary">
-            Back to Contacts
+          <Link to="/">
+            <button className="btn-secondary">
+              Back to Contacts
+            </button>
           </Link>
         </div>
       </header>

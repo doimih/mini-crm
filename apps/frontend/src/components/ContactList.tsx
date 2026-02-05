@@ -37,11 +37,29 @@ export default function ContactList({ onLogout, user }: ContactListProps) {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showAdminMenu, setShowAdminMenu] = useState(false);
 
   useEffect(() => {
     fetchContacts();
     fetchTags();
   }, [page, search]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.admin-dropdown')) {
+        setShowAdminMenu(false);
+      }
+    };
+
+    if (showAdminMenu) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showAdminMenu]);
 
   const fetchContacts = async () => {
     setLoading(true);
@@ -106,22 +124,86 @@ export default function ContactList({ onLogout, user }: ContactListProps) {
     <div className="container">
       <header>
         <h1>Contact Mini CRM</h1>
-        <div>
-          <Link to="/inbox" className="btn-secondary">
-            Inbox
-          </Link>
-          <Link to="/me" className="btn-secondary">
-            Personal Panel
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'relative' }}>
+          <Link to="/inbox">
+            <button className="btn-primary">Inbox</button>
           </Link>
           {user?.role === 'SUPERADMIN' && (
-            <>
-              <Link to="/admin" className="btn-secondary">
+            <div style={{ position: 'relative' }} className="admin-dropdown">
+              <button 
+                className="btn-secondary"
+                onClick={() => setShowAdminMenu(!showAdminMenu)}
+                style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+              >
                 Admin
-              </Link>
-              <Link to="/audit-logs" className="btn-secondary">
-                Activity Log
-              </Link>
-            </>
+                <span style={{ fontSize: '10px' }}>▼</span>
+              </button>
+              {showAdminMenu && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    marginTop: '5px',
+                    background: 'white',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    minWidth: '180px',
+                    zIndex: 1000,
+                    overflow: 'hidden'
+                  }}
+                >
+                  <Link 
+                    to="/me" 
+                    style={{ 
+                      display: 'block',
+                      padding: '12px 16px',
+                      color: '#333',
+                      textDecoration: 'none',
+                      transition: 'background 0.2s',
+                      borderBottom: '1px solid #eee'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#f0f7ff'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    onClick={() => setShowAdminMenu(false)}
+                  >
+                    Personal Panel
+                  </Link>
+                  <Link 
+                    to="/audit-logs" 
+                    style={{ 
+                      display: 'block',
+                      padding: '12px 16px',
+                      color: '#333',
+                      textDecoration: 'none',
+                      transition: 'background 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#f0f7ff'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    onClick={() => setShowAdminMenu(false)}
+                  >
+                    Activity Log
+                  </Link>
+                  <Link 
+                    to="/admin" 
+                    style={{ 
+                      display: 'block',
+                      padding: '12px 16px',
+                      color: '#333',
+                      textDecoration: 'none',
+                      transition: 'background 0.2s',
+                      borderTop: '1px solid #eee'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#f0f7ff'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    onClick={() => setShowAdminMenu(false)}
+                  >
+                    User Management
+                  </Link>
+                </div>
+              )}
+            </div>
           )}
           <button onClick={onLogout} className="btn-secondary">
             Logout

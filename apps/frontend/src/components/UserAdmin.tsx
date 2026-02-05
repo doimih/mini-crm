@@ -1,4 +1,5 @@
 import { useEffect, useState, FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import TagManager from './TagManager';
 import TranslationManager from './TranslationManager';
@@ -390,12 +391,16 @@ export default function UserAdmin() {
       <header>
         <h1>User Admin</h1>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <a href="/mini-crm/audit-logs" className="btn-secondary">
-            View Activity Log
-          </a>
-          <a href="/mini-crm/" className="btn-secondary">
-            Back to Contacts
-          </a>
+          <Link to="/mini-crm/audit-logs">
+            <button className="btn-secondary">
+              View Activity Log
+            </button>
+          </Link>
+          <Link to="/mini-crm/">
+            <button className="btn-secondary">
+              Back to Contacts
+            </button>
+          </Link>
         </div>
       </header>
 
