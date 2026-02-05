@@ -47,17 +47,17 @@ interface TicketDetail extends Ticket {
 }
 
 const statusColors = {
-  OPEN: '#007bff',
-  IN_PROGRESS: '#ffc107',
-  RESOLVED: '#28a745',
-  CLOSED: '#6c757d',
+  OPEN: '#1e88e5',
+  IN_PROGRESS: '#42a5f5',
+  RESOLVED: '#1565c0',
+  CLOSED: '#90caf9',
 };
 
 const priorityColors = {
-  LOW: '#6c757d',
-  MEDIUM: '#007bff',
-  HIGH: '#fd7e14',
-  URGENT: '#dc3545',
+  LOW: '#90caf9',
+  MEDIUM: '#42a5f5',
+  HIGH: '#1e88e5',
+  URGENT: '#0d47a1',
 };
 
 const formatStatus = (status: string) => {
@@ -366,12 +366,13 @@ export default function Inbox() {
                     <h3 style={{ margin: 0, fontSize: '1.1em' }}>{ticket.subject}</h3>
                     <span
                       style={{
-                        padding: '4px 8px',
-                        borderRadius: '4px',
+                        padding: '6px 14px',
+                        borderRadius: '6px',
                         fontSize: '0.85em',
-                        backgroundColor: statusColors[ticket.status],
+                        background: `linear-gradient(135deg, ${statusColors[ticket.status]} 0%, ${statusColors[ticket.status]}dd 100%)`,
                         color: 'white',
-                        fontWeight: 'bold',
+                        fontWeight: '600',
+                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                       }}
                     >
                       {formatStatus(ticket.status)}
@@ -478,12 +479,15 @@ export default function Inbox() {
                   value={selectedTicket.status}
                   onChange={(e) => handleUpdateStatus(selectedTicket.id, e.target.value)}
                   style={{
-                    padding: '6px 12px',
-                    borderRadius: '4px',
-                    border: '1px solid #ddd',
-                    backgroundColor: statusColors[selectedTicket.status],
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: `linear-gradient(135deg, ${statusColors[selectedTicket.status]} 0%, ${statusColors[selectedTicket.status]}dd 100%)`,
                     color: 'white',
-                    fontWeight: 'bold',
+                    fontWeight: '600',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    cursor: 'pointer',
+                    fontSize: '14px'
                   }}
                 >
                   <option value="OPEN">Open</option>
@@ -494,11 +498,13 @@ export default function Inbox() {
 
                 <span
                   style={{
-                    padding: '6px 12px',
-                    borderRadius: '4px',
-                    backgroundColor: priorityColors[selectedTicket.priority],
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    background: `linear-gradient(135deg, ${priorityColors[selectedTicket.priority]} 0%, ${priorityColors[selectedTicket.priority]}dd 100%)`,
                     color: 'white',
-                    fontWeight: 'bold',
+                    fontWeight: '600',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    fontSize: '14px'
                   }}
                 >
                   {selectedTicket.priority} Priority
@@ -542,7 +548,18 @@ export default function Inbox() {
                   style={{ display: 'none' }}
                   accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.txt"
                 />
-                <label htmlFor="file-upload" className="btn-secondary" style={{ cursor: 'pointer' }}>
+                <label htmlFor="file-upload" style={{ 
+                  padding: '10px 20px',
+                  borderRadius: '6px',
+                  background: 'linear-gradient(135deg, #42a5f5 0%, #2196f3 100%)',
+                  color: 'white',
+                  fontWeight: '500',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                  cursor: 'pointer',
+                  display: 'inline-block',
+                  transition: 'all 0.2s ease',
+                  border: 'none'
+                }}>
                   {uploadingFile ? 'Uploading...' : '📎 Attach File'}
                 </label>
               </div>
@@ -568,15 +585,35 @@ export default function Inbox() {
                           onClick={() =>
                             handleDownloadAttachment(selectedTicket.id, attachment.id, attachment.filename)
                           }
-                          className="btn-secondary"
-                          style={{ padding: '4px 8px', fontSize: '0.85em' }}
+                          style={{ 
+                            padding: '6px 12px', 
+                            fontSize: '0.85em',
+                            background: 'linear-gradient(135deg, #42a5f5 0%, #2196f3 100%)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontWeight: '500',
+                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                            transition: 'all 0.2s ease'
+                          }}
                         >
                           Download
                         </button>
                         <button
                           onClick={() => handleDeleteAttachment(selectedTicket.id, attachment.id)}
-                          className="btn-secondary"
-                          style={{ padding: '4px 8px', fontSize: '0.85em', backgroundColor: '#dc3545', color: 'white' }}
+                          style={{ 
+                            padding: '6px 12px', 
+                            fontSize: '0.85em', 
+                            background: 'linear-gradient(135deg, #ef5350 0%, #e53935 100%)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontWeight: '500',
+                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                            transition: 'all 0.2s ease'
+                          }}
                         >
                           Delete
                         </button>
@@ -598,7 +635,7 @@ export default function Inbox() {
                       padding: '12px',
                       backgroundColor: '#f9f9f9',
                       borderRadius: '6px',
-                      borderLeft: '3px solid #007bff',
+                      borderLeft: '3px solid #1e88e5',
                     }}
                   >
                     <div style={{ fontSize: '0.85em', color: '#666', marginBottom: '8px' }}>
