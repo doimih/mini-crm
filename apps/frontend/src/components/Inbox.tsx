@@ -292,7 +292,7 @@ export default function Inbox() {
           <button onClick={() => setShowNewTicket(true)} className="btn-primary">
             + New Ticket
           </button>
-          <Link to="/mini-crm/">
+          <Link to="/">
             <button className="btn-secondary">
               Back to Contacts
             </button>

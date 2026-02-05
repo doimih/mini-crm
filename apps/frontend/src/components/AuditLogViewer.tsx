@@ -199,12 +199,12 @@ export default function AuditLogViewer() {
       <header>
         <h1>User Activity Log</h1>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <Link to="/mini-crm/">
+          <Link to="/">
             <button className="btn-secondary">
               Back to Contacts
             </button>
           </Link>
-          <Link to="/mini-crm/admin">
+          <Link to="/admin">
             <button className="btn-secondary">
               Admin Panel
             </button>

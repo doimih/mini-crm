@@ -391,12 +391,12 @@ export default function UserAdmin() {
       <header>
         <h1>User Admin</h1>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <Link to="/mini-crm/audit-logs">
+          <Link to="/audit-logs">
             <button className="btn-secondary">
               View Activity Log
             </button>
           </Link>
-          <Link to="/mini-crm/">
+          <Link to="/">
             <button className="btn-secondary">
               Back to Contacts
             </button>
