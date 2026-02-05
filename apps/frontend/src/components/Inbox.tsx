@@ -99,6 +99,17 @@ export default function Inbox() {
     fetchContacts();
   }, [page, statusFilter, priorityFilter]);
 
+  // Auto-refresh ticket details when selected (polling every 5 seconds)
+  useEffect(() => {
+    if (!selectedTicket) return;
+
+    const intervalId = setInterval(() => {
+      fetchTicketDetails(selectedTicket.id);
+    }, 5000); // Refresh every 5 seconds
+
+    return () => clearInterval(intervalId);
+  }, [selectedTicket?.id]);
+
   const fetchTickets = async () => {
     setLoading(true);
     setError('');
@@ -446,11 +457,20 @@ export default function Inbox() {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '10px' }}>
                 <h2 style={{ margin: 0 }}>{selectedTicket.subject}</h2>
-                <button onClick={() => setSelectedTicket(null)} className="btn-secondary">
-                  ✕ Close
-                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    onClick={() => fetchTicketDetails(selectedTicket.id)} 
+                    className="btn-secondary"
+                    title="Refresh"
+                  >
+                    🔄
+                  </button>
+                  <button onClick={() => setSelectedTicket(null)} className="btn-secondary">
+                    ✕ Close
+                  </button>
+                </div>
               </div>
 
               <div style={{ marginTop: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>

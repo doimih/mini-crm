@@ -72,14 +72,6 @@ export const createUser = async (
       data.phone = phone;
     }
 
-    if (avatarUrl) {
-      data.avatarUrl = avatarUrl;
-    }
-
-    if (notificationPreference) {
-      data.notificationPreference = notificationPreference;
-    }
-
     const user = await prisma.user.create({
       data,
     });
@@ -135,14 +127,6 @@ export const updateUser = async (
 
     if (phone) {
       data.phone = phone;
-    }
-
-    if (avatarUrl) {
-      data.avatarUrl = avatarUrl;
-    }
-
-    if (notificationPreference) {
-      data.notificationPreference = notificationPreference;
     }
 
     const user = await prisma.user.update({
