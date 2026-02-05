@@ -35,16 +35,29 @@ export const authenticate = async (
       process.env.JWT_SECRET || 'secret'
     ) as JwtPayload;
 
-    req.user = decoded;
-
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      select: { emailVerifiedAt: true },
+      select: { 
+        emailVerifiedAt: true,
+        role: true,
+        status: true,
+      },
     });
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid token' });
     }
+
+    if (user.status === 'SUSPENDED') {
+      return res.status(403).json({ message: 'User is suspended' });
+    }
+
+    // Use fresh role from database instead of token
+    req.user = {
+      userId: decoded.userId,
+      email: decoded.email,
+      role: user.role,
+    };
 
     const isLogout = req.originalUrl?.includes('/auth/logout');
     const isResendVerification = req.originalUrl?.includes('/auth/resend-verification');

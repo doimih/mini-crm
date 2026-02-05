@@ -153,11 +153,21 @@ export default function Inbox() {
     setLoading(true);
 
     try {
-      await api.post('/tickets', {
-        ...newTicket,
-        assignedTo: newTicket.assignedTo ? parseInt(newTicket.assignedTo) : null,
-        contactId: newTicket.contactId ? parseInt(newTicket.contactId) : null,
-      });
+      const payload: any = {
+        subject: newTicket.subject,
+        description: newTicket.description,
+        priority: newTicket.priority,
+      };
+
+      if (newTicket.assignedTo) {
+        payload.assignedTo = parseInt(newTicket.assignedTo);
+      }
+
+      if (newTicket.contactId) {
+        payload.contactId = parseInt(newTicket.contactId);
+      }
+
+      await api.post('/tickets', payload);
       setShowNewTicket(false);
       setNewTicket({
         subject: '',
@@ -321,14 +331,13 @@ export default function Inbox() {
         )}
       </div>
 
-      {loading && !selectedTicket && <div className="loading">Loading...</div>}
+      {loading && <div className="loading">Loading...</div>}
 
-      <div style={{ display: 'grid', gridTemplateColumns: selectedTicket ? '1fr 1.5fr' : '1fr', gap: '20px' }}>
-        {/* Ticket List */}
-        <div>
-          {!loading && tickets.length === 0 && (
-            <div className="empty-state">No tickets found.</div>
-          )}
+      {/* Ticket List */}
+      <div>
+        {!loading && tickets.length === 0 && (
+          <div className="empty-state">No tickets found.</div>
+        )}
 
           {tickets.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -339,7 +348,6 @@ export default function Inbox() {
                   style={{
                     cursor: 'pointer',
                     borderLeft: `4px solid ${priorityColors[ticket.priority]}`,
-                    backgroundColor: selectedTicket?.id === ticket.id ? '#f0f8ff' : 'white',
                   }}
                   onClick={() => fetchTicketDetails(ticket.id)}
                 >
@@ -406,16 +414,42 @@ export default function Inbox() {
               </button>
             </div>
           )}
-        </div>
+      </div>
 
-        {/* Ticket Details */}
-        {selectedTicket && (
-          <div className="contact-card">
+      {/* Ticket Details Modal */}
+      {selectedTicket && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px',
+          }}
+          onClick={() => setSelectedTicket(null)}
+        >
+          <div
+            className="contact-card"
+            style={{
+              maxWidth: '800px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              margin: 0,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div style={{ marginBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                 <h2 style={{ margin: 0 }}>{selectedTicket.subject}</h2>
                 <button onClick={() => setSelectedTicket(null)} className="btn-secondary">
-                  ✕
+                  ✕ Close
                 </button>
               </div>
 
@@ -571,8 +605,8 @@ export default function Inbox() {
               </form>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* New Ticket Modal */}
       {showNewTicket && (

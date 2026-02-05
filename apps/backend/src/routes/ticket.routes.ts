@@ -64,8 +64,8 @@ router.post(
     body('subject').isString().notEmpty().trim(),
     body('description').isString().notEmpty().trim(),
     body('priority').optional().isIn(['LOW', 'MEDIUM', 'HIGH', 'URGENT']),
-    body('assignedTo').optional().isInt(),
-    body('contactId').optional().isInt(),
+    body('assignedTo').optional({ nullable: true }).isInt(),
+    body('contactId').optional({ nullable: true }).isInt(),
     validate,
   ],
   createTicket
