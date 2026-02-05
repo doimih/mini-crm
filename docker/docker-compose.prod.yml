@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ../apps/backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgres://user:password@db:5432/mini_crm
+    networks:
+      - mini-crm-network
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ../apps/frontend
+      dockerfile: Dockerfile
+    networks:
+      - mini-crm-network
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mini_crm
+    networks:
+      - mini-crm-network
+
+  traefik:
+    image: traefik:v2.5
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    networks:
+      - mini-crm-network
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+networks:
+  mini-crm-network:
+    driver: bridge

@@ -1,0 +1,25 @@
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+http:
+  routers:
+    mini-crm:
+      rule: "Host(`localhost`)"
+      service: mini-crm-service
+      entryPoints:
+        - web
+        - websecure
+      tls: true
+  services:
+    mini-crm-service:
+      loadBalancer:
+        servers:
+          - url: "http://backend:3000"
+          - url: "http://frontend:5173"
+
+providers:
+  file:
+    filename: "/traefik/dynamic.yml"

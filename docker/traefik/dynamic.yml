@@ -1,0 +1,38 @@
+http:
+  routers:
+    backend:
+      rule: "Host(`backend.local`)"
+      service: backend
+      entryPoints:
+        - web
+        - websecure
+      tls: true
+      middlewares:
+        - mini-crm-nocache
+    frontend:
+      rule: "Host(`frontend.local`)"
+      service: frontend
+      entryPoints:
+        - web
+        - websecure
+      tls: true
+      middlewares:
+        - mini-crm-nocache
+
+  services:
+    backend:
+      loadBalancer:
+        servers:
+          - url: "http://backend:3000"
+    frontend:
+      loadBalancer:
+        servers:
+          - url: "http://frontend:3000"
+
+  middlewares:
+    mini-crm-nocache:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "no-store, no-cache, must-revalidate, proxy-revalidate"
+          Pragma: "no-cache"
+          Expires: "0"

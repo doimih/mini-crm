@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  status    UserStatus @default(ACTIVE)
+  emailVerifiedAt DateTime?
+  emailVerificationToken String?
+  emailVerificationTokenExpires DateTime?
+  lastLoginAt  DateTime?
+  lastLogoutAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EmailConfig {
+  id        Int      @id
+  host      String
+  port      Int
+  secure    Boolean  @default(false)
+  username  String?
+  password  String?
+  from      String?
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model Contact {
+  id        Int          @id @default(autoincrement())
+  name      String
+  contactPersonName String?
+  email     String?
+  phone     String?
+  company   String?
+  notes     String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  tags      ContactTag[]
+}
+
+model Tag {
+  id       Int          @id @default(autoincrement())
+  name     String       @unique
+  contacts ContactTag[]
+}
+
+model ContactTag {
+  contactId Int
+  tagId     Int
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([contactId, tagId])
+}

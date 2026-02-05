@@ -1,0 +1,24 @@
+{
+  "name": "mini-crm",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
+    "dev": "npm run dev --workspace=backend & npm run dev --workspace=frontend",
+    "start": "npm run start --workspace=backend & npm run start --workspace=frontend",
+    "test": "npm run test --workspace=backend & npm run test --workspace=frontend"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.6",
+    "express": "^5.2.1"
+  }
+}

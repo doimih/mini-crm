@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: mini-crm-db
+    environment:
+      POSTGRES_DB: minicrm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mini-crm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ../apps/backend
+      dockerfile: Dockerfile
+    container_name: mini-crm-backend
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/minicrm
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production-please
+      PORT: 3000
+      NODE_ENV: production
+      SUPERADMIN_EMAIL: design@doimih.net
+      SUPERADMIN_PASSWORD: ChangeMe123!
+      SEED_CONTACTS: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - mini-crm-network
+      - shop-online_web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=shop-online_web"
+      - "traefik.http.routers.mini-crm-backend.rule=Host(`projects.doimih.net`) && PathPrefix(`/mini-crm/api`)"
+      - "traefik.http.routers.mini-crm-backend.entrypoints=web,websecure"
+      - "traefik.http.routers.mini-crm-backend.tls=true"
+      - "traefik.http.routers.mini-crm-backend.middlewares=mini-crm-nocache"
+      - "traefik.http.middlewares.mini-crm-nocache.headers.customResponseHeaders.Cache-Control=no-store, no-cache, must-revalidate, proxy-revalidate"
+      - "traefik.http.middlewares.mini-crm-nocache.headers.customResponseHeaders.Pragma=no-cache"
+      - "traefik.http.middlewares.mini-crm-nocache.headers.customResponseHeaders.Expires=0"
+      - "traefik.http.services.mini-crm-backend.loadbalancer.server.port=3000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../apps/frontend
+      dockerfile: Dockerfile
+    container_name: mini-crm-frontend
+    depends_on:
+      - backend
+    networks:
+      - mini-crm-network
+      - shop-online_web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=shop-online_web"
+      - "traefik.http.routers.mini-crm-frontend.rule=Host(`projects.doimih.net`) && PathPrefix(`/mini-crm`)"
+      - "traefik.http.routers.mini-crm-frontend.entrypoints=web,websecure"
+      - "traefik.http.routers.mini-crm-frontend.tls=true"
+      - "traefik.http.routers.mini-crm-frontend.middlewares=mini-crm-nocache"
+      - "traefik.http.middlewares.mini-crm-nocache.headers.customResponseHeaders.Cache-Control=no-store, no-cache, must-revalidate, proxy-revalidate"
+      - "traefik.http.middlewares.mini-crm-nocache.headers.customResponseHeaders.Pragma=no-cache"
+      - "traefik.http.middlewares.mini-crm-nocache.headers.customResponseHeaders.Expires=0"
+      - "traefik.http.services.mini-crm-frontend.loadbalancer.server.port=80"
+    restart: unless-stopped
+
+networks:
+  mini-crm-network:
+    driver: bridge
+  shop-online_web:
+    external: true
+
+volumes:
+  postgres_data:
