@@ -73,6 +73,39 @@ header h1 {
   flex-wrap: wrap;
 }
 
+.activation-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.activation-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 24px;
+}
+
+.status-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+}
+
+.status-dot--inactive {
+  background: #ffc107;
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.25);
+}
+
+.status-dot--active {
+  background: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+}
+
 .search-input {
   flex: 1;
   min-width: 200px;

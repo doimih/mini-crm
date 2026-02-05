@@ -105,7 +105,7 @@ export default function ContactList({ onLogout, user }: ContactListProps) {
   return (
     <div className="container">
       <header>
-        <h1>Mini CRM</h1>
+        <h1>Contact Mini CRM</h1>
         <div>
           {user?.role === 'SUPERADMIN' && (
             <Link to="/admin" className="btn-secondary">
@@ -118,17 +118,15 @@ export default function ContactList({ onLogout, user }: ContactListProps) {
         </div>
       </header>
 
-      {user?.emailVerified === false ? (
+      {user?.emailVerified === false && (
         <div className="warning">
           <div>
             Account not activated. Please check your email to verify your account.
           </div>
         </div>
-      ) : (
-        <div className="success">Account activated.</div>
       )}
 
-      <div className="toolbar">
+      <div className="activation-row">
         <input
           type="text"
           placeholder="Search contacts..."
@@ -139,6 +137,23 @@ export default function ContactList({ onLogout, user }: ContactListProps) {
           }}
           className="search-input"
         />
+        <div className="activation-status">
+          <span
+            className={`status-dot ${
+              user?.emailVerified === false
+                ? 'status-dot--inactive'
+                : 'status-dot--active'
+            }`}
+            title={
+              user?.emailVerified === false
+                ? 'Account not activated'
+                : 'Account activated'
+            }
+          />
+        </div>
+      </div>
+
+      <div className="toolbar">
         <div>
           <button onClick={() => setShowForm(true)} className="btn-primary">
             Add Contact

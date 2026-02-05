@@ -115,10 +115,20 @@ export default function UserAdmin() {
     }
   };
 
-  const toggleVerification = async (user: User) => {
-    const verified = Boolean(user.emailVerifiedAt);
+  const confirmAccount = async (user: User) => {
     try {
-      await api.patch(`/users/${user.id}/verification`, { verified: !verified });
+      await api.patch(`/users/${user.id}/verification`, { verified: true });
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const currentUser = JSON.parse(storedUser) as {
+          id: number;
+          emailVerified?: boolean;
+        };
+        if (currentUser.id === user.id) {
+          currentUser.emailVerified = true;
+          localStorage.setItem('user', JSON.stringify(currentUser));
+        }
+      }
       fetchUsers();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to update verification');
@@ -407,8 +417,12 @@ export default function UserAdmin() {
             <p>Last login: {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : '-'}</p>
             <p>Last logout: {user.lastLogoutAt ? new Date(user.lastLogoutAt).toLocaleString() : '-'}</p>
             <div className="card-actions">
-              <button onClick={() => toggleVerification(user)} className="btn-secondary">
-                {user.emailVerifiedAt ? 'Deactivate' : 'Activate'}
+              <button
+                onClick={() => confirmAccount(user)}
+                className="btn-secondary"
+                disabled={Boolean(user.emailVerifiedAt)}
+              >
+                {user.emailVerifiedAt ? 'Confirmed' : 'Confirm account'}
               </button>
               <button onClick={() => toggleStatus(user)} className="btn-edit">
                 {user.status === 'ACTIVE' ? 'Suspend' : 'Activate'}

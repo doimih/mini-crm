@@ -46,7 +46,7 @@ export default function Login({ onLogin }: LoginProps) {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1>Mini CRM</h1>
+        <h1>Contact Mini CRM</h1>
         <h2>{isRegister ? 'Register' : 'Login'}</h2>
         
         {error && <div className="error">{error}</div>}
