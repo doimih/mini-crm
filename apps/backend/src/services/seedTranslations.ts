@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/database';
 import { DEFAULT_TRANSLATIONS } from './defaultTranslations';
-
-const prisma = new PrismaClient();
 
 export const seedTranslations = async () => {
   try {

@@ -2,6 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
+import i18n, { loadTranslations } from '../i18n';
 const startOfDay = (date) => {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
@@ -252,6 +253,13 @@ export default function PersonalPanel() {
             };
             const response = await api.put('/profile/me', payload);
             setProfile(response.data);
+            // Update i18n and localStorage when language changes
+            const newLang = response.data.language || 'en';
+            if (i18n.language !== newLang) {
+                localStorage.setItem('language', newLang);
+                await i18n.changeLanguage(newLang);
+                await loadTranslations(newLang);
+            }
             setProfileMessage('Profile saved.');
         }
         catch (err) {
@@ -278,7 +286,7 @@ export default function PersonalPanel() {
     };
     const selectedKey = toDateKey(selectedDate);
     const selectedEvents = eventsByDay[selectedKey] || [];
-    return (_jsxs("div", { className: "container", children: [_jsxs("header", { children: [_jsx("h1", { children: "Personal Panel" }), _jsx("div", { children: _jsx(Link, { to: "/", className: "btn-secondary", children: "Back to Contacts" }) })] }), error && (_jsxs("div", { className: "error", style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }, children: [_jsx("span", { children: error }), error === 'Email not verified' && (_jsx("button", { className: "btn-secondary", onClick: handleResendVerification, disabled: resendLoading, style: { padding: '4px 12px', fontSize: '0.9rem', marginLeft: '12px' }, children: resendLoading ? 'Sending...' : 'Resend' }))] })), _jsxs("div", { className: "calendar-panel", children: [_jsxs("div", { className: "profile-section", children: [_jsxs("div", { className: "profile-card", children: [_jsx("h2", { children: "Profile" }), profileMessage && _jsx("div", { className: "success", children: profileMessage }), _jsxs("div", { style: { display: 'grid', gridTemplateColumns: '150px 1fr', gap: '20px', marginBottom: '20px' }, children: [_jsxs("div", { className: "profile-avatar", style: { gridColumn: '1', gridRow: '1 / 3' }, children: [profile?.avatarUrl ? (_jsx("img", { src: profile.avatarUrl, alt: "Avatar" })) : (_jsx("div", { className: "avatar-placeholder", children: "No avatar" })), _jsx("input", { type: "file", accept: "image/*", onChange: (e) => handleAvatarChange(e.target.files?.[0]), style: { marginTop: '10px' } }), _jsx("small", { children: "Max 100x100 px" })] }), _jsx("div", { style: { gridColumn: '2', gridRow: '1' }, children: _jsxs("label", { style: { display: 'block', marginBottom: '10px' }, children: ["Phone", _jsx("input", { type: "text", value: profile?.phone || '', onChange: (e) => setProfile((prev) => prev ? { ...prev, phone: e.target.value } : prev), style: { width: '100%', marginTop: '5px' } })] }) }), _jsx("div", { style: { gridColumn: '2', gridRow: '2' }, children: _jsxs("label", { style: { display: 'block' }, children: ["Notification preference", _jsxs("select", { value: profile?.notificationPreference || 'NONE', onChange: (e) => setProfile((prev) => prev
+    return (_jsxs("div", { className: "container", children: [_jsxs("header", { children: [_jsx("h1", { children: "Personal Panel" }), _jsx("div", { children: _jsx(Link, { to: "/", children: _jsx("button", { className: "btn-secondary", children: "Back to Contacts" }) }) })] }), error && (_jsxs("div", { className: "error", style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }, children: [_jsx("span", { children: error }), error === 'Email not verified' && (_jsx("button", { className: "btn-secondary", onClick: handleResendVerification, disabled: resendLoading, style: { padding: '4px 12px', fontSize: '0.9rem', marginLeft: '12px' }, children: resendLoading ? 'Sending...' : 'Resend' }))] })), _jsxs("div", { className: "calendar-panel", children: [_jsxs("div", { className: "profile-section", children: [_jsxs("div", { className: "profile-card", children: [_jsx("h2", { children: "Profile" }), profileMessage && _jsx("div", { className: "success", children: profileMessage }), _jsxs("div", { style: { display: 'grid', gridTemplateColumns: '150px 1fr', gap: '20px', marginBottom: '20px' }, children: [_jsxs("div", { className: "profile-avatar", style: { gridColumn: '1', gridRow: '1 / 3' }, children: [profile?.avatarUrl ? (_jsx("img", { src: profile.avatarUrl, alt: "Avatar" })) : (_jsx("div", { className: "avatar-placeholder", children: "No avatar" })), _jsx("input", { type: "file", accept: "image/*", onChange: (e) => handleAvatarChange(e.target.files?.[0]), style: { marginTop: '10px' } }), _jsx("small", { children: "Max 100x100 px" })] }), _jsx("div", { style: { gridColumn: '2', gridRow: '1' }, children: _jsxs("label", { style: { display: 'block', marginBottom: '10px' }, children: ["Phone", _jsx("input", { type: "text", value: profile?.phone || '', onChange: (e) => setProfile((prev) => prev ? { ...prev, phone: e.target.value } : prev), style: { width: '100%', marginTop: '5px' } })] }) }), _jsx("div", { style: { gridColumn: '2', gridRow: '2' }, children: _jsxs("label", { style: { display: 'block' }, children: ["Notification preference", _jsxs("select", { value: profile?.notificationPreference || 'NONE', onChange: (e) => setProfile((prev) => prev
                                                                 ? {
                                                                     ...prev,
                                                                     notificationPreference: e.target

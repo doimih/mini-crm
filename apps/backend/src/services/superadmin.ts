@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/database';
 import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
 
 export const ensureSuperAdmin = async () => {
   const email = process.env.SUPERADMIN_EMAIL || 'design@doimih.net';

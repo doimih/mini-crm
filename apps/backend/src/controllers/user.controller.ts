@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { prisma } from '../config/database';
 import bcrypt from 'bcryptjs';
 import { generateEmailVerificationToken } from '../services/emailVerification';
 import { isEmailConfigured, sendVerificationEmail } from '../services/mailer';
 import { logAudit } from '../services/auditLog';
-
-const prisma = new PrismaClient();
 
 export const getUsers = async (
   req: Request,

@@ -617,6 +617,72 @@ button:disabled {
   border-top: 1px solid #eee;
 }
 
+.user-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.user-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.user-action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  background: #f5f5f5;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+
+.user-action-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.user-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.user-action-btn.edit {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.user-action-btn.confirm {
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-size: 20px;
+}
+
+.user-action-btn.suspend {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.user-action-btn.delete {
+  background: #e53935;
+  color: white;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -659,6 +725,32 @@ button:disabled {
 .modal-content h2 {
   margin-bottom: 20px;
   color: #333;
+}
+
+.modal-email {
+  margin-top: -10px;
+  margin-bottom: 16px;
+  color: #555;
+  font-size: 14px;
+}
+
+.admin-form--modal .form-row {
+  grid-template-columns: 1fr;
+}
+
+.admin-form--modal input,
+.admin-form--modal select,
+.admin-form--modal textarea {
+  width: 100%;
+}
+
+.modal-content .form-actions {
+  justify-content: flex-end;
+}
+
+.modal-content .form-actions button {
+  flex: 0 0 auto;
+  min-width: 140px;
 }
 
 .tag-selector {

@@ -35,7 +35,15 @@ export default function Login({ onLogin }) {
             setLoading(false);
         }
     };
-    return (_jsx("div", { className: "login-container", children: _jsxs("div", { className: "login-box", children: [_jsx("h1", { children: "Contact Mini CRM" }), _jsx("h2", { children: isRegister ? 'Register' : 'Login' }), error && _jsx("div", { className: "error", children: error }), success && _jsx("div", { className: "success", children: success }), _jsxs("form", { onSubmit: handleSubmit, children: [_jsx("input", { type: "email", placeholder: "Email", value: email, onChange: (e) => setEmail(e.target.value), required: true }), _jsx("input", { type: "password", placeholder: "Password", value: password, onChange: (e) => setPassword(e.target.value), required: true, minLength: 6 }), _jsx("button", { type: "submit", disabled: loading, children: loading ? 'Loading...' : isRegister ? 'Register' : 'Login' })] }), !isRegister && (_jsx(Link, { to: "/forgot-password", className: "toggle-btn", style: { display: 'block', marginTop: '10px' }, children: "Forgot Password?" })), _jsx("button", { className: "toggle-btn", onClick: () => setIsRegister(!isRegister), children: isRegister
+    return (_jsx("div", { className: "login-container", children: _jsxs("div", { className: "login-box", children: [_jsx("h1", { children: "Contact Mini CRM" }), _jsx("h2", { children: isRegister ? 'Register' : 'Login' }), error && _jsx("div", { className: "error", children: error }), success && _jsx("div", { className: "success", children: success }), _jsxs("form", { onSubmit: handleSubmit, children: [_jsx("input", { type: "email", placeholder: "Email", value: email, onChange: (e) => setEmail(e.target.value), required: true }), _jsx("input", { type: "password", placeholder: "Password", value: password, onChange: (e) => setPassword(e.target.value), required: true, minLength: 6 }), _jsx("button", { type: "submit", disabled: loading, children: loading ? 'Loading...' : isRegister ? 'Register' : 'Login' })] }), !isRegister && (_jsx(Link, { to: "/forgot-password", style: {
+                        display: 'block',
+                        marginTop: '10px',
+                        textAlign: 'center',
+                        color: '#007bff',
+                        textDecoration: 'none',
+                        fontSize: '14px',
+                        transition: 'color 0.2s'
+                    }, onMouseEnter: (e) => e.currentTarget.style.textDecoration = 'underline', onMouseLeave: (e) => e.currentTarget.style.textDecoration = 'none', children: "Forgot Password?" })), _jsx("button", { className: "toggle-btn", onClick: () => setIsRegister(!isRegister), children: isRegister
                         ? 'Already have an account? Login'
                         : "Don't have an account? Register" })] }) }));
 }

@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/database';
 import { stringify } from 'csv-stringify/sync';
 import { logAudit } from '../services/auditLog';
-
-const prisma = new PrismaClient();
 
 export const getContacts = async (
   req: Request,

@@ -10,6 +10,7 @@ import PersonalPanel from './components/PersonalPanel';
 import AuditLogViewer from './components/AuditLogViewer';
 import Inbox from './components/Inbox';
 import { api } from './services/api';
+import i18n, { loadTranslations } from './i18n';
 
 function AppRoutes() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -115,6 +116,14 @@ function AppRoutes() {
 }
 
 function App() {
+  useEffect(() => {
+    // Load translations on app mount
+    const currentLang = localStorage.getItem('language') || 'en';
+    loadTranslations(currentLang).then(() => {
+      i18n.changeLanguage(currentLang);
+    });
+  }, []);
+
   return (
     <BrowserRouter basename="/mini-crm">
       <AppRoutes />

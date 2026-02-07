@@ -717,43 +717,53 @@ export default function UserAdmin() {
             const isSelf = currentUserId === user.id;
             
             return (
-              <div key={user.id} className="contact-card">
-                <h3>{user.email} {isSelf && <span style={{fontSize: '0.9em', color: '#666'}}>(You)</span>}</h3>
-                <p>Role: {user.role}</p>
-                <p>Status: {user.status}</p>
-                <p>Phone: {user.phone || '-'}</p>
-                <p>
-                  Account: {user.emailVerifiedAt ? 'Activated' : 'Not activated'}
-                </p>
-                <p>Last login: {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : '-'}</p>
-                <p>Last logout: {user.lastLogoutAt ? new Date(user.lastLogoutAt).toLocaleString() : '-'}</p>
-                <div className="card-actions">
+              <div key={user.id} className="contact-card user-card">
+                <div className="user-card-content">
+                  <h3>{user.email} {isSelf && <span style={{fontSize: '0.9em', color: '#666'}}>(You)</span>}</h3>
+                  <p>Role: {user.role}</p>
+                  <p>Status: {user.status}</p>
+                  <p>Phone: {user.phone || '-'}</p>
+                  <p>
+                    Account: {user.emailVerifiedAt ? 'Activated' : 'Not activated'}
+                  </p>
+                  <p>Last login: {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : '-'}</p>
+                  <p>Last logout: {user.lastLogoutAt ? new Date(user.lastLogoutAt).toLocaleString() : '-'}</p>
+                </div>
+                <div className="user-card-actions">
                   <button
                     onClick={() => openEditUser(user)}
-                    className="btn-primary"
+                    className="user-action-btn edit"
+                    title="Edit user"
+                    aria-label="Edit user"
                   >
-                    Edit
+                    ✏️
                   </button>
                   <button
                     onClick={() => confirmAccount(user)}
-                    className="btn-secondary"
+                    className="user-action-btn confirm"
                     disabled={Boolean(user.emailVerifiedAt) || isSelf}
+                    title={user.emailVerifiedAt ? 'Already confirmed' : 'Confirm account'}
+                    aria-label={user.emailVerifiedAt ? 'Already confirmed' : 'Confirm account'}
                   >
-                    {user.emailVerifiedAt ? 'Confirmed' : 'Confirm account'}
+                    ●
                   </button>
-                  <button 
-                    onClick={() => toggleStatus(user)} 
-                    className="btn-edit"
+                  <button
+                    onClick={() => toggleStatus(user)}
+                    className="user-action-btn suspend"
                     disabled={isSelf}
+                    title={user.status === 'ACTIVE' ? 'Suspend user' : 'Activate user'}
+                    aria-label={user.status === 'ACTIVE' ? 'Suspend user' : 'Activate user'}
                   >
-                    {user.status === 'ACTIVE' ? 'Suspend' : 'Activate'}
+                    {user.status === 'ACTIVE' ? '⏸️' : '▶️'}
                   </button>
-                  <button 
-                    onClick={() => handleDelete(user.id)} 
-                    className="btn-delete"
+                  <button
+                    onClick={() => handleDelete(user.id)}
+                    className="user-action-btn delete"
                     disabled={isSelf}
+                    title="Delete user"
+                    aria-label="Delete user"
                   >
-                    Delete
+                    🗑️
                   </button>
                 </div>
               </div>
@@ -765,9 +775,10 @@ export default function UserAdmin() {
         <div className="modal" onClick={closeEditUser}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>Edit User: {editForm.email}</h2>
+            <p className="modal-email">Email: {editForm.email || '-'}</p>
             {error && <div className="error">{error}</div>}
             <form onSubmit={handleEditSubmit}>
-              <div className="admin-form">
+              <div className="admin-form admin-form--modal">
                 <div className="form-row">
                   <label>
                     Email

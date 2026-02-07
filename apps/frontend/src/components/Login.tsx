@@ -75,7 +75,20 @@ export default function Login({ onLogin }: LoginProps) {
         </form>
         
         {!isRegister && (
-          <Link to="/forgot-password" className="toggle-btn" style={{ display: 'block', marginTop: '10px' }}>
+          <Link 
+            to="/forgot-password" 
+            style={{ 
+              display: 'block', 
+              marginTop: '10px',
+              textAlign: 'center',
+              color: '#007bff',
+              textDecoration: 'none',
+              fontSize: '14px',
+              transition: 'color 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+            onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+          >
             Forgot Password?
           </Link>
         )}

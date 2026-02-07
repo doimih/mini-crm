@@ -1,7 +1,5 @@
 import nodemailer from 'nodemailer';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../config/database';
 
 const appUrl = process.env.APP_URL || 'http://localhost:3000/mini-crm';
 

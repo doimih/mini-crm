@@ -9,7 +9,9 @@ import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import PersonalPanel from './components/PersonalPanel';
 import AuditLogViewer from './components/AuditLogViewer';
+import Inbox from './components/Inbox';
 import { api } from './services/api';
+import i18n, { loadTranslations } from './i18n';
 function AppRoutes() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
@@ -34,9 +36,16 @@ function AppRoutes() {
         setIsAuthenticated(false);
         setUser(null);
     };
-    return (_jsxs(Routes, { children: [_jsx(Route, { path: "/verify", element: _jsx(EmailVerify, {}) }), _jsx(Route, { path: "/forgot-password", element: _jsx(ForgotPassword, {}) }), _jsx(Route, { path: "/reset-password", element: _jsx(ResetPassword, {}) }), _jsx(Route, { path: "/login", element: isAuthenticated ? (_jsx(Navigate, { to: "/" })) : (_jsx(Login, { onLogin: handleLogin })) }), _jsx(Route, { path: "/", element: isAuthenticated ? (_jsx(ContactList, { onLogout: handleLogout, user: user })) : (_jsx(Navigate, { to: "/login" })) }), _jsx(Route, { path: "/admin", element: isAuthenticated && user?.role === 'SUPERADMIN' ? (_jsx(UserAdmin, {})) : (_jsx(Navigate, { to: "/" })) }), _jsx(Route, { path: "/me", element: isAuthenticated ? (_jsx(PersonalPanel, {})) : (_jsx(Navigate, { to: "/login" })) }), _jsx(Route, { path: "/audit-logs", element: isAuthenticated && user?.role === 'SUPERADMIN' ? (_jsx(AuditLogViewer, {})) : (_jsx(Navigate, { to: "/" })) })] }));
+    return (_jsxs(Routes, { children: [_jsx(Route, { path: "/verify", element: _jsx(EmailVerify, {}) }), _jsx(Route, { path: "/forgot-password", element: _jsx(ForgotPassword, {}) }), _jsx(Route, { path: "/reset-password", element: _jsx(ResetPassword, {}) }), _jsx(Route, { path: "/login", element: isAuthenticated ? (_jsx(Navigate, { to: "/" })) : (_jsx(Login, { onLogin: handleLogin })) }), _jsx(Route, { path: "/", element: isAuthenticated ? (_jsx(ContactList, { onLogout: handleLogout, user: user })) : (_jsx(Navigate, { to: "/login" })) }), _jsx(Route, { path: "/admin", element: isAuthenticated && user?.role === 'SUPERADMIN' ? (_jsx(UserAdmin, {})) : (_jsx(Navigate, { to: "/" })) }), _jsx(Route, { path: "/me", element: isAuthenticated ? (_jsx(PersonalPanel, {})) : (_jsx(Navigate, { to: "/login" })) }), _jsx(Route, { path: "/inbox", element: isAuthenticated ? (_jsx(Inbox, {})) : (_jsx(Navigate, { to: "/login" })) }), _jsx(Route, { path: "/audit-logs", element: isAuthenticated && user?.role === 'SUPERADMIN' ? (_jsx(AuditLogViewer, {})) : (_jsx(Navigate, { to: "/" })) })] }));
 }
 function App() {
+    useEffect(() => {
+        // Load translations on app mount
+        const currentLang = localStorage.getItem('language') || 'en';
+        loadTranslations(currentLang).then(() => {
+            i18n.changeLanguage(currentLang);
+        });
+    }, []);
     return (_jsx(BrowserRouter, { basename: "/mini-crm", children: _jsx(AppRoutes, {}) }));
 }
 export default App;

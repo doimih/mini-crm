@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/database';
 import {
   generateEmailVerificationToken,
   hashEmailVerificationToken,
@@ -12,8 +12,6 @@ import {
 } from '../services/passwordReset';
 import { isEmailConfigured, sendVerificationEmail, sendPasswordResetEmail } from '../services/mailer';
 import { logAudit } from '../services/auditLog';
-
-const prisma = new PrismaClient();
 
 export const register = async (
   req: Request,

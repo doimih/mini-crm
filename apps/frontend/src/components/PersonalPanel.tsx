@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
+import i18n, { loadTranslations } from '../i18n';
 
 interface CalendarEvent {
   id: number;
@@ -307,6 +308,15 @@ export default function PersonalPanel() {
       };
       const response = await api.put('/profile/me', payload);
       setProfile(response.data);
+      
+      // Update i18n and localStorage when language changes
+      const newLang = response.data.language || 'en';
+      if (i18n.language !== newLang) {
+        localStorage.setItem('language', newLang);
+        await i18n.changeLanguage(newLang);
+        await loadTranslations(newLang);
+      }
+      
       setProfileMessage('Profile saved.');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to save profile');

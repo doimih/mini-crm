@@ -1,4 +1,4 @@
-import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
@@ -12,10 +12,25 @@ export default function ContactList({ onLogout, user }) {
     const [selectedContact, setSelectedContact] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showAdminMenu, setShowAdminMenu] = useState(false);
     useEffect(() => {
         fetchContacts();
         fetchTags();
     }, [page, search]);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            const target = event.target;
+            if (!target.closest('.admin-dropdown')) {
+                setShowAdminMenu(false);
+            }
+        };
+        if (showAdminMenu) {
+            document.addEventListener('click', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [showAdminMenu]);
     const fetchContacts = async () => {
         setLoading(true);
         try {
@@ -74,7 +89,39 @@ export default function ContactList({ onLogout, user }) {
         setSelectedContact(null);
         fetchContacts();
     };
-    return (_jsxs("div", { className: "container", children: [_jsxs("header", { children: [_jsx("h1", { children: "Contact Mini CRM" }), _jsxs("div", { children: [_jsx(Link, { to: "/me", className: "btn-secondary", children: "Personal Panel" }), user?.role === 'SUPERADMIN' && (_jsxs(_Fragment, { children: [_jsx(Link, { to: "/admin", className: "btn-secondary", children: "Admin" }), _jsx(Link, { to: "/audit-logs", className: "btn-secondary", children: "Activity Log" })] })), _jsx("button", { onClick: onLogout, className: "btn-secondary", children: "Logout" })] })] }), user?.emailVerified === false && (_jsx("div", { className: "warning", children: _jsx("div", { children: "Account not activated. Please check your email to verify your account." }) })), _jsxs("div", { className: "activation-row", children: [_jsx("input", { type: "text", placeholder: "Search contacts...", value: search, onChange: (e) => {
+    return (_jsxs("div", { className: "container", children: [_jsxs("header", { children: [_jsx("h1", { children: "Contact Mini CRM" }), _jsxs("div", { style: { display: 'flex', gap: '10px', alignItems: 'center', position: 'relative' }, children: [_jsx(Link, { to: "/inbox", children: _jsx("button", { className: "btn-primary", children: "Inbox" }) }), user?.role === 'SUPERADMIN' && (_jsxs("div", { style: { position: 'relative' }, className: "admin-dropdown", children: [_jsxs("button", { className: "btn-secondary", onClick: () => setShowAdminMenu(!showAdminMenu), style: { display: 'flex', alignItems: 'center', gap: '5px' }, children: ["Admin", _jsx("span", { style: { fontSize: '10px' }, children: "\u25BC" })] }), showAdminMenu && (_jsxs("div", { style: {
+                                            position: 'absolute',
+                                            top: '100%',
+                                            left: 0,
+                                            marginTop: '5px',
+                                            background: 'white',
+                                            border: '1px solid #ddd',
+                                            borderRadius: '6px',
+                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                                            minWidth: '180px',
+                                            zIndex: 1000,
+                                            overflow: 'hidden'
+                                        }, children: [_jsx(Link, { to: "/me", style: {
+                                                    display: 'block',
+                                                    padding: '12px 16px',
+                                                    color: '#333',
+                                                    textDecoration: 'none',
+                                                    transition: 'background 0.2s',
+                                                    borderBottom: '1px solid #eee'
+                                                }, onMouseEnter: (e) => e.currentTarget.style.background = '#f0f7ff', onMouseLeave: (e) => e.currentTarget.style.background = 'transparent', onClick: () => setShowAdminMenu(false), children: "Personal Panel" }), _jsx(Link, { to: "/audit-logs", style: {
+                                                    display: 'block',
+                                                    padding: '12px 16px',
+                                                    color: '#333',
+                                                    textDecoration: 'none',
+                                                    transition: 'background 0.2s'
+                                                }, onMouseEnter: (e) => e.currentTarget.style.background = '#f0f7ff', onMouseLeave: (e) => e.currentTarget.style.background = 'transparent', onClick: () => setShowAdminMenu(false), children: "Activity Log" }), _jsx(Link, { to: "/admin", style: {
+                                                    display: 'block',
+                                                    padding: '12px 16px',
+                                                    color: '#333',
+                                                    textDecoration: 'none',
+                                                    transition: 'background 0.2s',
+                                                    borderTop: '1px solid #eee'
+                                                }, onMouseEnter: (e) => e.currentTarget.style.background = '#f0f7ff', onMouseLeave: (e) => e.currentTarget.style.background = 'transparent', onClick: () => setShowAdminMenu(false), children: "User Management" })] }))] })), _jsx("button", { onClick: onLogout, className: "btn-secondary", children: "Logout" })] })] }), user?.emailVerified === false && (_jsx("div", { className: "warning", children: _jsx("div", { children: "Account not activated. Please check your email to verify your account." }) })), _jsxs("div", { className: "activation-row", children: [_jsx("input", { type: "text", placeholder: "Search contacts...", value: search, onChange: (e) => {
                             setSearch(e.target.value);
                             setPage(1);
                         }, className: "search-input" }), _jsx("div", { className: "activation-status", children: _jsx("span", { className: `status-dot ${user?.emailVerified === false

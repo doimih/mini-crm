@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/database';
 import { logAudit } from '../services/auditLog';
-
-const prisma = new PrismaClient();
 
 export const getProfile = async (
   req: Request,
